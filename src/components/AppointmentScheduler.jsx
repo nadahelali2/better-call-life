@@ -63,6 +63,10 @@ const AppointmentScheduler = () => {
   const [unavailableTimes, setUnavailableTimes] = useState([]);
   const [loading, setLoading] = useState(false); // State to manage loading
 
+
+  const [submittedDate, setSubmittedDate] = useState(null);
+  const [submittedTime, setSubmittedTime] = useState('');
+
   const fetchUnavailableDates = async () => {
     try {
       const response = await axios.get('http://localhost:8000/api/appointments/unavailable');
@@ -123,6 +127,8 @@ const AppointmentScheduler = () => {
         appointment_date: formattedDateTime,
       });
       setSubmitted(true);
+      setSubmittedDate(selectedDate); // Store the submitted date
+      setSubmittedTime(selectedTime); // Store the submitted time
       setUserInfo({ name: '', email: '', phone: '' });
       setShowForm(false);
       fetchUnavailableDates();
@@ -147,7 +153,7 @@ const AppointmentScheduler = () => {
           name={userInfo.name}
           phone={userInfo.phone}
           date={new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full', timeStyle: 'short' }).format(
-            new Date(format(selectedDate, 'yyyy-MM-dd') + 'T' + selectedTime + ':00')
+            new Date(format(submittedDate, 'yyyy-MM-dd') + 'T' + submittedTime + ':00')
           )}
         />
       ) : (
