@@ -10,7 +10,7 @@ function AppointmentNotification({date, name, phone ,toggle}) {
        <div className='flex justify mt-4 '>
        <CheckCircleIcon className="w-8 h-8 text-green-500 " />
         <h3 className="text-lg font-medium text-gray-800 ">You are scheduled</h3>
-       </div>
+       </div> 
      {/*    <p className="text-gray-600">A calendar invitation has been sent to your email address.</p>
         <div className="flex justify-between items-center mt-4">
         <span className="text-gray-800 font-medium">Open Invitation</span>
