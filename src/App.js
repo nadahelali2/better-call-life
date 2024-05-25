@@ -22,7 +22,9 @@ function App() {
   };
   return (
 
-      <><Navbar /><Routes>
+      <>
+      
+      <Navbar /><Routes>
       <Route element={<Appointment />} exact path='/appointement' />
       <Route element={<ProtectedRoute element={Admin} />} exact path='/admin' />
       <Route element={<Home />} exact path='/' />

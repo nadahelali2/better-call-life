@@ -8,9 +8,8 @@ import { useTranslation } from 'react-i18next';
 import AppointmentNotification from './Notify';
 
 // TimePicker component
-const TimePicker = ({ onTimeSelected, unavailableTimes }) => {
+const TimePicker = ({ onTimeSelected, unavailableTimes, selectedTime, setSelectedTime }) => {
   const times = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00'];
-  const [selectedTime, setSelectedTime] = useState(null);
 
   const handleClick = (time) => {
     if (!unavailableTimes.includes(time)) {
@@ -37,7 +36,7 @@ const TimePicker = ({ onTimeSelected, unavailableTimes }) => {
           >
             {time}
           </button>
-          {selectedTime === time  && (
+          {selectedTime === time && !unavailableTimes.includes(time) && (
             <button className="ml-2 text-blue-500 font-bold" onClick={handleNext}>
               Next
             </button>
@@ -50,10 +49,8 @@ const TimePicker = ({ onTimeSelected, unavailableTimes }) => {
 
 // AppointmentScheduler component
 const AppointmentScheduler = () => {
-    const {i18n} = useTranslation();
-    useEffect(() => {
-        
-    },[i18n.language])
+  const { i18n } = useTranslation();
+  useEffect(() => {}, [i18n.language]);
 
   const [value, onChange] = useState(new Date());
   const [submitted, setSubmitted] = useState(false);
@@ -64,7 +61,7 @@ const AppointmentScheduler = () => {
   const [userInfo, setUserInfo] = useState({ name: '', email: '', phone: '' });
   const [unavailableDates, setUnavailableDates] = useState({});
   const [unavailableTimes, setUnavailableTimes] = useState([]);
-  const [availableTimes, setAvailableTimes] = useState([]);
+  const [loading, setLoading] = useState(false); // State to manage loading
 
   const fetchUnavailableDates = async () => {
     try {
@@ -74,14 +71,15 @@ const AppointmentScheduler = () => {
       console.error('Error fetching unavailable dates:', error);
     }
   };
-  useEffect(() => {
 
+  useEffect(() => {
     fetchUnavailableDates();
   }, []);
 
   useEffect(() => {
     const dateKey = format(selectedDate, 'yyyy-MM-dd');
     setUnavailableTimes(unavailableDates[dateKey] || []);
+    setSelectedTime(''); // Reset selected time when the date changes
   }, [selectedDate, unavailableDates]);
 
   const handleInputChange = (e) => {
@@ -93,16 +91,13 @@ const AppointmentScheduler = () => {
   };
 
   const handleDateChange = (date) => {
-    handleTimeSelected('');  
     setSelectedDate(date);
     setShowTime(true);
-    setSelectedTime('');
     setShowForm(false);
   };
 
   const handleTimeSelected = (time) => {
     setSelectedTime(time);
-    
     setShowForm(true);
   };
 
@@ -112,6 +107,8 @@ const AppointmentScheduler = () => {
       alert('Please select a date and time for the appointment.');
       return;
     }
+
+    setLoading(true); // Set loading state to true
 
     const combinedDateTime = new Date(selectedDate);
     const [hours, minutes] = selectedTime.split(':');
@@ -131,6 +128,8 @@ const AppointmentScheduler = () => {
       fetchUnavailableDates();
     } catch (error) {
       console.error('There was an error booking the appointment!', error);
+    } finally {
+      setLoading(false); // Set loading state to false after the request is completed
     }
   };
 
@@ -142,107 +141,132 @@ const AppointmentScheduler = () => {
 
   return (
     <div>
-        {submitted ? (
-           <AppointmentNotification  
-           toggle={()=>setSubmitted(false)}
-           name={userInfo.name} 
-           phone={userInfo.phone} 
-           date={ new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full', timeStyle: 'short' }).format(
-               new Date(format(selectedDate, 'yyyy-MM-dd') + 'T' + selectedTime + ':00')
-           )}
-            />
-       
-       ):(
+      {submitted ? (
+        <AppointmentNotification
+          toggle={() => setSubmitted(false)}
+          name={userInfo.name}
+          phone={userInfo.phone}
+          date={new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full', timeStyle: 'short' }).format(
+            new Date(format(selectedDate, 'yyyy-MM-dd') + 'T' + selectedTime + ':00')
+          )}
+        />
+      ) : (
         <>
+          <div className="flex gap-5 m-4 p-4 rounded-xl">
+            {showForm && <ArrowLeftIcon className="h-6 w-6" onClick={() => setShowForm(false)} />}
 
-           <div className="flex gap-5 m-4 p-4 rounded-xl">
-        {showForm && (
-          <ArrowLeftIcon className="h-6 w-6" onClick={() => setShowForm(false)} />
-        )}
-
-        {!showForm && (
-          <Calendar
-            onChange={handleDateChange}
-            value={value}
-            locale={i18n.language}
-            minDate={new Date()}
-            tileDisabled={({ date }) => isDateUnavailable(date)}
-          />
-        )}
-
-        {showTime && !showForm && (
-          <TimePicker onTimeSelected={handleTimeSelected} unavailableTimes={unavailableTimes} />
-        )}
-
-        {showForm && (
-          <div className="flex bg-gray-100  p-6">
-            <CalendarDaysIcon className="h-6 w-6" />
-            <h1>
-            {selectedTime ? (
-                new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full', timeStyle: 'short' }).format(
-                new Date(`${format(selectedDate, 'yyyy-MM-dd')}T${selectedTime}:00`)
-                )
-            ) : (
-                "Please select a time"
+            {!showForm && (
+              <Calendar
+                onChange={handleDateChange}
+                value={value}
+                locale={i18n.language}
+                minDate={new Date()}
+                tileDisabled={({ date }) => isDateUnavailable(date)}
+              />
             )}
-            </h1>
-          </div>
-        )}
 
-        {showForm && (
-          <div className="mb-8 border-gray-100 border-l-2 p-7">
-            <h2 className="text-xl font-bold mb-4">Enter Details</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  value={userInfo.name}
-                  onChange={handleInputChange}
-                  required
-                  className="border rounded-md px-3 py-2 w-full"
-                />
+            {showTime && !showForm && (
+              <TimePicker
+                onTimeSelected={handleTimeSelected}
+                unavailableTimes={unavailableTimes}
+                selectedTime={selectedTime}
+                setSelectedTime={setSelectedTime}
+              />
+            )}
+
+            {showForm && (
+              <div className="flex bg-gray-100 p-6">
+                <CalendarDaysIcon className="h-6 w-6" />
+                <h1>
+                  {selectedTime ? (
+                    new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full', timeStyle: 'short' }).format(
+                      new Date(`${format(selectedDate, 'yyyy-MM-dd')}T${selectedTime}:00`)
+                    )
+                  ) : (
+                    'Please select a time'
+                  )}
+                </h1>
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={userInfo.email}
-                  onChange={handleInputChange}
-                  required
-                  className="border rounded-md px-3 py-2 w-full"
-                />
+            )}
+
+            {showForm && (
+              <div className="mb-8 border-gray-100 border-l-2 p-7">
+                <h2 className="text-xl font-bold mb-4">Enter Details</h2>
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Name"
+                      value={userInfo.name}
+                      onChange={handleInputChange}
+                      required
+                      className="border rounded-md px-3 py-2 w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Email"
+                      value={userInfo.email}
+                      onChange={handleInputChange}
+                      required
+                      className="border rounded-md px-3 py-2 w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
+                    <input
+                      type="phone"
+                      name="phone"
+                      placeholder="Phone"
+                      value={userInfo.phone}
+                      onChange={handleInputChange}
+                      required
+                      className="border rounded-md px-3 py-2 w-full"
+                    />
+                  </div>
+                  <div>
+                    <button
+                      type="submit"
+                      className="bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <svg
+                          className="animate-spin h-5 w-5 text-white inline-block"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        'Book Appointment'
+                      )}
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                <input
-                  type="phone"
-                  name="phone"
-                  placeholder="Phone"
-                  value={userInfo.phone}
-                  onChange={handleInputChange}
-                  required
-                  className="border rounded-md px-3 py-2 w-full"
-                />
-              </div>
-              <div>
-                <button
-                  type="submit"
-                  className="bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                >
-                    Book Appointment
-                </button>
-              </div>
-            </form>
+            )}
           </div>
-        )}
-      </div>
         </>
-        )}
+      )}
     </div>
   );
 };

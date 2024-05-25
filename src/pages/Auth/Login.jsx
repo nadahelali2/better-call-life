@@ -7,7 +7,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
 
 const AdminLogin = () => {
-    const { t } = useTranslation();
+    const {i18n, t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -28,12 +28,12 @@ const AdminLogin = () => {
     
   };
  
-  
+  const direction = i18n.dir();
 
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100" dir={direction}>
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">{t('register.login')}</h2>
         <form onSubmit={handleSubmit}>
