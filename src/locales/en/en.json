@@ -1,0 +1,23 @@
+{
+
+    "navbar": {
+        "home": "Home",
+        "appointment": "Appointment",
+        "admin": "Admin",
+        "login": "Login",
+        "register": "Register",
+        "logout": "Logout"
+    },
+    "register": {
+        "title": "Register",
+        "name": "Name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "register": "Register",
+        "login": "Login",
+        "haveAccount": "Already have an account?"
+    }
+    ,
+    "app":"Take your appointment"
+}

@@ -1,0 +1,28 @@
+{
+    "navbar":{
+        "home": "الرئيسية",
+       
+        "appointment": "احجز موعداً",
+        "login": "تسجيل الدخول",
+        "admin": " مدير"
+    }
+    ,
+
+    "register":{
+        "title": "تسجيل",
+        "name": "الاسم",
+        "email": "البريد الالكتروني",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "phone": "رقم الهاتف",
+        "address": "العنوان",
+        "registerButton": "تسجيل",
+        "login": "تسجيل الدخول",
+        "haveAccount": "لديك حساب؟",
+        "registerAs": "تسجيل كـ",
+        "patient": "مريض",
+        "doctor": "طبيب",
+        "admin": "مدير"
+    },
+    "app": "احجز موعداً"
+}

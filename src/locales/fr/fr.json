@@ -1,0 +1,24 @@
+{
+    "navbar":{
+        "home": "Accueil",
+        "about": "À propos",
+        "services": "Services",
+        "portfolio": "Portfolio",
+        "contact": "Contact",
+        "appointment": "Rendez-vous",
+        "login": "Connexion",
+        "logout": "Déconnexion",
+        "admin": "Admin"
+    },
+
+    "register": {
+        "title": "Inscription",
+        "name": "Nom",
+        "email": "Courriel",
+        "password": "Mot de passe",
+        "haveAccount": "Vous avez déjà un compte?"
+    }
+,
+    "app":"Prenez votre rendez-vous"
+
+}
