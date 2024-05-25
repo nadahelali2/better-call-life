@@ -35,8 +35,10 @@ const Hero = () => {
           <div className="relative flex justify-center items-center w-full h-full text-white text-center font-bold text-xl z-10">
             {image.text}
           </div>
+          
         </div>
       ))}
+      
     </div>
   );
 };
