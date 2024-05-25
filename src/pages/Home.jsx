@@ -12,7 +12,6 @@ function Home() {
     
     <Hero />
     <div className="py-12 bg-gray-100">
-      <h2 className="text-4xl font-bold text-center mb-8 text-gray-800">Our Services</h2>
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
           <h3 className="text-2xl font-semibold mb-4 text-purple-600">Individual Therapy</h3>
@@ -60,8 +59,6 @@ function Home() {
                 <button className="bg-white hover:bg-gray-200 text-green-500 font-bold py-2 px-4 rounded-md ml-2">Subscribe</button>
             </div>
         </div>
-
-        
     
 
     <Footer />
